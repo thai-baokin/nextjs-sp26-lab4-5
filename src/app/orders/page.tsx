@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -17,7 +17,7 @@ interface Order {
     created_at: string;
 }
 
-export default function OrdersPage() {
+function OrdersContent() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -62,7 +62,7 @@ export default function OrdersPage() {
         return (
             <div className="min-h-screen flex flex-col bg-indigo-50 dark:bg-[#020617]">
                 <Header />
-                <main className="flex-grow flex items-center justify-center">
+                <main className="grow flex items-center justify-center">
                     <div className="flex flex-col items-center gap-4">
                         <svg className="animate-spin h-10 w-10 text-blue-500" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
@@ -83,7 +83,7 @@ export default function OrdersPage() {
         <div className="min-h-screen flex flex-col bg-indigo-50 dark:bg-[#020617] transition-colors duration-500">
             <Header />
 
-            <main className="flex-grow w-full max-w-[1400px] mx-auto px-4 md:px-8 py-8 md:py-12">
+            <main className="grow w-full max-w-[1400px] mx-auto px-4 md:px-8 py-8 md:py-12">
                 {/* Page Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
@@ -165,5 +165,13 @@ export default function OrdersPage() {
 
             <Footer />
         </div>
+    );
+}
+
+export default function OrdersPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <OrdersContent />
+        </Suspense>
     );
 }
