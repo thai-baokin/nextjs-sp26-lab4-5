@@ -2,14 +2,15 @@
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { FlaskConical, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { Suspense } from "react";
 
 export default function LoginPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const redirectTo = searchParams.get("redirect") || "/";
+    // const searchParams = useSearchParams();
+const redirectTo = "/";
     const { signIn } = useAuth();
 
     const [email, setEmail] = useState("");
