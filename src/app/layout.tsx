@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import ChatInterface from "@/components/ChatInterface";
 
 const inter = Inter({
     variable: "--font-inter",
@@ -27,6 +28,7 @@ export default function RootLayout({
                 <AuthProvider>
                     <CartProvider>
                         {children}
+                        <ChatInterface />
                     </CartProvider>
                 </AuthProvider>
             </body>
