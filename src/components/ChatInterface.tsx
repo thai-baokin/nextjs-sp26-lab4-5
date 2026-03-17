@@ -22,6 +22,7 @@ export default function ChatInterface() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const [isDismissed, setIsDismissed] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Fetch previous messages & setup realtime auth
@@ -134,12 +135,12 @@ export default function ChatInterface() {
         }
     };
 
-    if (!user) return null; // Only authenticated users see the chat widget
+    if (!user || isDismissed) return null; // Only authenticated users see the chat widget, and not if dismissed
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
             {isOpen ? (
-                <div className="bg-background border rounded-lg shadow-xl w-[350px] sm:w-[400px] h-[500px] flex flex-col mb-4 overflow-hidden transition-all animate-in slide-in-from-bottom-5">
+                <div className="bg-background border rounded-lg shadow-xl w-[350px] sm:w-[400px] h-[500px] max-h-[80vh] flex flex-col mb-4 overflow-hidden transition-all animate-in slide-in-from-bottom-5">
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b bg-muted/50">
                         <div className="flex items-center gap-2">
@@ -159,7 +160,7 @@ export default function ChatInterface() {
                     </div>
 
                     {/* Chat Body */}
-                    <ScrollArea className="flex-1 p-4">
+                    <div className="flex-1 overflow-y-auto p-4 min-h-0 flex flex-col custom-scrollbar">
                         <div className="flex flex-col gap-4">
                             {messages.length === 0 && !isTyping && (
                                 <div className="text-center text-sm text-muted-foreground mt-10">
@@ -210,7 +211,7 @@ export default function ChatInterface() {
                             )}
                             <div ref={scrollRef} className="h-1 w-full" />
                         </div>
-                    </ScrollArea>
+                    </div>
 
                     {/* Input Area */}
                     <div className="p-3 border-t bg-background flex items-center gap-2">
@@ -234,14 +235,27 @@ export default function ChatInterface() {
                     </div>
                 </div>
             ) : (
-                <Button
-                    onClick={() => setIsOpen(true)}
-                    size="lg"
-                    className="h-14 w-14 rounded-full shadow-lg relative group overflow-hidden"
-                >
-                    <MessageCircle className="h-6 w-6 relative z-10 transition-transform group-hover:scale-110" />
-                    <span className="absolute inset-0 bg-primary-foreground/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></span>
-                </Button>
+                <div className="relative group">
+                    <Button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsDismissed(true);
+                        }}
+                        variant="secondary"
+                        size="icon"
+                        className="absolute -top-2 -left-2 h-6 w-6 rounded-full shadow-md z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                        <X className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                        onClick={() => setIsOpen(true)}
+                        size="lg"
+                        className="h-14 w-14 rounded-full shadow-lg relative overflow-hidden"
+                    >
+                        <MessageCircle className="h-6 w-6 relative z-10 transition-transform hover:scale-110" />
+                        <span className="absolute inset-0 bg-primary-foreground/20 rounded-full scale-0 hover:scale-100 transition-transform duration-300"></span>
+                    </Button>
+                </div>
             )}
         </div>
     );
